@@ -4,9 +4,11 @@ import express from "express";
 import session from "express-session";
 
 import { configurePassport, createDevUser } from "./auth.js";
-import { config } from "./config.js";
+import { config, validateConfig } from "./config.js";
 import { createDatabase } from "./database.js";
 import { games, gameIds, minVotes } from "./gameCatalog.js";
+
+validateConfig();
 
 const database = createDatabase();
 
@@ -142,8 +144,7 @@ app.get("/api/bootstrap", async (req, res, next) => {
 app.get("/api/health", (_req, res) => {
   res.json({
     ok: true,
-    database: config.supabaseEnabled ? "supabase" : "json",
-    databasePath: config.databasePath,
+    database: "supabase",
     googleEnabled: config.googleEnabled,
   });
 });
@@ -172,8 +173,8 @@ app.use((error, _req, res, _next) => {
 if (!process.env.VERCEL) {
   app.listen(config.port, () => {
     console.log(`VoteCode running at ${config.baseUrl}`);
-  console.log(`Frontend: ${config.frontendDir}`);
-  console.log(`Database: ${config.supabaseEnabled ? "Supabase" : config.databasePath}`);
+    console.log(`Frontend: ${config.frontendDir}`);
+    console.log("Database: Supabase");
     if (!config.googleEnabled) {
       console.log("Google OAuth is not configured; local dev login is available.");
     }
