@@ -5,7 +5,13 @@ import { Strategy as GoogleStrategy } from "passport-google-oauth20";
 
 export function configurePassport({ database, googleEnabled, baseUrl }) {
   passport.serializeUser((user, done) => done(null, user.id));
-  passport.deserializeUser((id, done) => done(null, database.findUserById(id) || false));
+  passport.deserializeUser(async (id, done) => {
+    try {
+      done(null, (await database.findUserById(id)) || false);
+    } catch (error) {
+      done(error);
+    }
+  });
 
   if (!googleEnabled) return passport;
 
@@ -16,11 +22,11 @@ export function configurePassport({ database, googleEnabled, baseUrl }) {
         clientSecret: process.env.GOOGLE_CLIENT_SECRET,
         callbackURL: `${baseUrl}/auth/google/callback`,
       },
-      (_accessToken, _refreshToken, profile, done) => {
+      async (_accessToken, _refreshToken, profile, done) => {
         try {
           const email = profile.emails?.[0]?.value || null;
           const avatarUrl = profile.photos?.[0]?.value || null;
-          const user = database.upsertUser({
+          const user = await database.upsertUser({
             provider: "google",
             providerId: profile.id,
             email,
@@ -38,7 +44,7 @@ export function configurePassport({ database, googleEnabled, baseUrl }) {
   return passport;
 }
 
-export function createDevUser(database, displayName) {
+export async function createDevUser(database, displayName) {
   const cleanName = String(displayName || "").trim() || "Jugador local";
   const providerId = crypto.createHash("sha256").update(cleanName.toLowerCase()).digest("hex");
 

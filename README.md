@@ -35,8 +35,16 @@ y deja `ENABLE_DEV_LOGIN=false`.
 
 ## Base De Datos
 
-Los votos se guardan en `data/votecode.json` por defecto. Puedes cambiar esa
-ruta con `DATA_DIR`.
+En desarrollo, si no configuras Supabase, los votos se guardan en
+`data/votecode.json`. Puedes cambiar esa ruta con `DATA_DIR`.
+
+En produccion se recomienda Supabase. Crea un proyecto, abre el SQL Editor y
+ejecuta `supabase/schema.sql`. Luego configura:
+
+```text
+SUPABASE_URL=...
+SUPABASE_SERVICE_ROLE_KEY=...
+```
 
 Cada cuenta guarda una sola papeleta editable. La papeleta debe tener al menos
 3 juegos y puede incluir todos los juegos disponibles. Los porcentajes se
@@ -73,23 +81,25 @@ npm run check
 
 ## Deployment
 
-### Opcion Recomendada: Render
+### Opcion Recomendada Sin Pagar: Supabase + Render Free
 
-Para que los votos se guarden bien con la base local JSON, usa Render con disco
-persistente. Este repo incluye `render.yaml`.
+Usa Render para correr el backend y Supabase para guardar votos. No necesitas
+disco persistente si configuras `SUPABASE_URL` y `SUPABASE_SERVICE_ROLE_KEY`.
 
-1. En Render, crea un Blueprint desde el repo `Lucas23-IECI/VoteCode`.
+1. En Supabase, crea un proyecto y ejecuta `supabase/schema.sql`.
+2. En Render, crea un Web Service desde el repo `Lucas23-IECI/VoteCode`.
 2. Define `BASE_URL` con la URL final de Render, por ejemplo:
    `https://votecode.onrender.com`.
-3. Completa `GOOGLE_CLIENT_ID` y `GOOGLE_CLIENT_SECRET`.
-4. En Google Cloud, agrega:
+3. Completa `SUPABASE_URL` y `SUPABASE_SERVICE_ROLE_KEY`.
+4. Completa `GOOGLE_CLIENT_ID` y `GOOGLE_CLIENT_SECRET`.
+5. En Google Cloud, agrega:
 
 ```text
 https://tu-url-de-render.onrender.com/auth/google/callback
 ```
 
-Render monta la base en `/var/data` y el backend guarda los votos en
-`/var/data/votecode.json`.
+Si prefieres no usar Supabase, Render necesita disco persistente y eso requiere
+un plan pagado.
 
 ### Vercel
 

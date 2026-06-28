@@ -5,13 +5,10 @@ import session from "express-session";
 
 import { configurePassport, createDevUser } from "./auth.js";
 import { config } from "./config.js";
+import { createDatabase } from "./database.js";
 import { games, gameIds, minVotes } from "./gameCatalog.js";
-import { JsonDatabase } from "./jsonDatabase.js";
 
-const database = new JsonDatabase({
-  databasePath: config.databasePath,
-  games,
-});
+const database = createDatabase();
 
 const passport = configurePassport({
   database,
@@ -47,7 +44,13 @@ function validateBallot(gameIdsPayload) {
   return { ok: true, selected };
 }
 
-function buildBootstrapPayload(req) {
+async function buildBootstrapPayload(req) {
+  const [myVotes, recentBallots, results] = await Promise.all([
+    database.getUserVotes(req.user?.id),
+    database.getRecentBallots(),
+    database.getResults(),
+  ]);
+
   return {
     auth: {
       googleEnabled: config.googleEnabled,
@@ -59,9 +62,9 @@ function buildBootstrapPayload(req) {
     },
     user: database.publicUser(req.user),
     games,
-    myVotes: database.getUserVotes(req.user?.id),
-    recentBallots: database.getRecentBallots(),
-    ...database.getResults(),
+    myVotes,
+    recentBallots,
+    ...results,
   };
 }
 
@@ -104,14 +107,18 @@ app.get(
   (_req, res) => res.redirect("/"),
 );
 
-app.get("/auth/dev", (req, res) => {
+app.get("/auth/dev", async (req, res, next) => {
   if (!config.devLoginEnabled) return res.status(404).send("Dev login disabled.");
 
-  const user = createDevUser(database, req.query.name);
-  req.login(user, (error) => {
-    if (error) return res.status(500).send("No se pudo iniciar sesion local.");
-    return res.redirect("/");
-  });
+  try {
+    const user = await createDevUser(database, req.query.name);
+    req.login(user, (error) => {
+      if (error) return res.status(500).send("No se pudo iniciar sesion local.");
+      return res.redirect("/");
+    });
+  } catch (error) {
+    next(error);
+  }
 });
 
 app.post("/auth/logout", (req, res, next) => {
@@ -124,26 +131,35 @@ app.post("/auth/logout", (req, res, next) => {
   });
 });
 
-app.get("/api/bootstrap", (req, res) => {
-  res.json(buildBootstrapPayload(req));
+app.get("/api/bootstrap", async (req, res, next) => {
+  try {
+    res.json(await buildBootstrapPayload(req));
+  } catch (error) {
+    next(error);
+  }
 });
 
 app.get("/api/health", (_req, res) => {
   res.json({
     ok: true,
+    database: config.supabaseEnabled ? "supabase" : "json",
     databasePath: config.databasePath,
     googleEnabled: config.googleEnabled,
   });
 });
 
-app.post("/api/votes", requireAuth, (req, res) => {
+app.post("/api/votes", requireAuth, async (req, res, next) => {
   const validation = validateBallot(req.body?.gameIds);
   if (!validation.ok) {
     return res.status(400).json({ error: validation.message });
   }
 
-  database.saveVotes(req.user.id, validation.selected);
-  return res.json({ ok: true, ...buildBootstrapPayload(req) });
+  try {
+    await database.saveVotes(req.user.id, validation.selected);
+    return res.json({ ok: true, ...(await buildBootstrapPayload(req)) });
+  } catch (error) {
+    return next(error);
+  }
 });
 
 app.use(express.static(config.frontendDir));
@@ -156,8 +172,8 @@ app.use((error, _req, res, _next) => {
 if (!process.env.VERCEL) {
   app.listen(config.port, () => {
     console.log(`VoteCode running at ${config.baseUrl}`);
-    console.log(`Frontend: ${config.frontendDir}`);
-    console.log(`Database: ${config.databasePath}`);
+  console.log(`Frontend: ${config.frontendDir}`);
+  console.log(`Database: ${config.supabaseEnabled ? "Supabase" : config.databasePath}`);
     if (!config.googleEnabled) {
       console.log("Google OAuth is not configured; local dev login is available.");
     }

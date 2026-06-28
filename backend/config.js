@@ -26,3 +26,6 @@ config.baseUrl = (process.env.BASE_URL || `http://127.0.0.1:${config.port}`).rep
 config.databasePath = path.join(config.dataDir, "votecode.json");
 config.googleEnabled = Boolean(process.env.GOOGLE_CLIENT_ID && process.env.GOOGLE_CLIENT_SECRET);
 config.devLoginEnabled = process.env.ENABLE_DEV_LOGIN !== "false" && config.nodeEnv !== "production";
+config.supabaseUrl = process.env.SUPABASE_URL || "";
+config.supabaseServiceRoleKey = process.env.SUPABASE_SERVICE_ROLE_KEY || "";
+config.supabaseEnabled = Boolean(config.supabaseUrl && config.supabaseServiceRoleKey);

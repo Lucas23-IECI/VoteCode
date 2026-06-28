@@ -2,7 +2,7 @@ services:
   - type: web
     name: votecode
     runtime: node
-    plan: starter
+    plan: free
     buildCommand: npm ci
     startCommand: npm start
     healthCheckPath: /api/health
@@ -21,7 +21,7 @@ services:
         sync: false
       - key: GOOGLE_CLIENT_SECRET
         sync: false
-    disk:
-      name: votecode-data
-      mountPath: /var/data
-      sizeGB: 1
+      - key: SUPABASE_URL
+        sync: false
+      - key: SUPABASE_SERVICE_ROLE_KEY
+        sync: false
