@@ -1,0 +1,70 @@
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>VoteCode</title>
+    <link rel="stylesheet" href="./styles.css" />
+  </head>
+  <body>
+    <main class="app-shell">
+      <section class="topbar" aria-labelledby="page-title">
+        <div>
+          <p class="eyebrow">Noche de juegos</p>
+          <h1 id="page-title">VoteCode</h1>
+          <p class="subtitle">Que gane el plan que mas prende al grupo.</p>
+        </div>
+        <div class="hero-visual">
+          <div class="mini-screen">
+            <span></span>
+            <span></span>
+            <span></span>
+          </div>
+          <div class="controller">
+            <span class="dpad"></span>
+            <span class="button button-a"></span>
+            <span class="button button-b"></span>
+          </div>
+          <div class="summary-pill">
+            <span id="total-votes">0</span>
+            <small>votos</small>
+          </div>
+        </div>
+      </section>
+
+      <section class="vote-panel" aria-label="Panel de votacion">
+        <label for="friend-name">Nombre del amigo</label>
+        <div class="vote-row">
+          <input id="friend-name" type="text" placeholder="Ej: Nico" autocomplete="off" />
+          <button id="undo-vote" class="ghost-button" type="button">Deshacer</button>
+          <button id="reset-votes" class="danger-button" type="button">Reiniciar</button>
+        </div>
+        <p id="status-message" class="status-message" aria-live="polite"></p>
+      </section>
+
+      <section class="podium-section" aria-labelledby="podium-title">
+        <h2 id="podium-title">Podio</h2>
+        <div id="podium" class="podium" aria-live="polite"></div>
+      </section>
+
+      <section class="content-grid">
+        <section aria-labelledby="games-title">
+          <h2 id="games-title">Juegos</h2>
+          <div id="games-list" class="games-list"></div>
+        </section>
+
+        <aside class="ranking-panel" aria-labelledby="ranking-title">
+          <h2 id="ranking-title">Ranking</h2>
+          <div id="ranking-list" class="ranking-list"></div>
+
+          <div class="history-block">
+            <h3>Ultimos votos</h3>
+            <ol id="vote-history" class="vote-history"></ol>
+          </div>
+        </aside>
+      </section>
+    </main>
+
+    <script src="./app.js"></script>
+  </body>
+</html>
