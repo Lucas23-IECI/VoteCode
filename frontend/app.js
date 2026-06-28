@@ -234,7 +234,7 @@ function renderHistory() {
   els.voteHistory.innerHTML = state.recentBallots
     .map((ballot) => {
       const picks = ballot.picks === 1 ? "1 juego" : `${ballot.picks} juegos`;
-      return `<li><strong>${escapeHtml(ballot.display_name)}</strong>: ${picks}</li>`;
+      return `<li><strong>${escapeHtml(ballot.displayName)}</strong>: ${picks}</li>`;
     })
     .join("");
 }
