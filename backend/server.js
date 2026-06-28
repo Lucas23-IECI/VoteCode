@@ -153,11 +153,15 @@ app.use((error, _req, res, _next) => {
   res.status(500).json({ error: "Algo fallo en el servidor." });
 });
 
-app.listen(config.port, () => {
-  console.log(`VoteCode running at ${config.baseUrl}`);
-  console.log(`Frontend: ${config.frontendDir}`);
-  console.log(`Database: ${config.databasePath}`);
-  if (!config.googleEnabled) {
-    console.log("Google OAuth is not configured; local dev login is available.");
-  }
-});
+if (!process.env.VERCEL) {
+  app.listen(config.port, () => {
+    console.log(`VoteCode running at ${config.baseUrl}`);
+    console.log(`Frontend: ${config.frontendDir}`);
+    console.log(`Database: ${config.databasePath}`);
+    if (!config.googleEnabled) {
+      console.log("Google OAuth is not configured; local dev login is available.");
+    }
+  });
+}
+
+export default app;

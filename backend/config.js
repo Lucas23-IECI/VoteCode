@@ -7,6 +7,7 @@ const rootDir = path.resolve(backendDir, "..");
 const dataDirFromEnv = process.env.DATA_DIR;
 
 function resolveDataDir(value) {
+  if (!value && process.env.VERCEL) return "/tmp/votecode-data";
   if (!value) return path.join(rootDir, "data");
   return path.isAbsolute(value) ? value : path.resolve(rootDir, value);
 }

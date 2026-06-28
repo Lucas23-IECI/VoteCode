@@ -70,3 +70,33 @@ npm start
 npm run dev
 npm run check
 ```
+
+## Deployment
+
+### Opcion Recomendada: Render
+
+Para que los votos se guarden bien con la base local JSON, usa Render con disco
+persistente. Este repo incluye `render.yaml`.
+
+1. En Render, crea un Blueprint desde el repo `Lucas23-IECI/VoteCode`.
+2. Define `BASE_URL` con la URL final de Render, por ejemplo:
+   `https://votecode.onrender.com`.
+3. Completa `GOOGLE_CLIENT_ID` y `GOOGLE_CLIENT_SECRET`.
+4. En Google Cloud, agrega:
+
+```text
+https://tu-url-de-render.onrender.com/auth/google/callback
+```
+
+Render monta la base en `/var/data` y el backend guarda los votos en
+`/var/data/votecode.json`.
+
+### Vercel
+
+El repo incluye `vercel.json` para que Vercel no muestre `404` al servir la app
+desde `frontend/`. Aun asi, Vercel no es buena opcion para guardar votos en un
+archivo JSON: sus funciones tienen filesystem de solo lectura y solo `/tmp` es
+escribible temporalmente.
+
+Usa Vercel solo si cambias la persistencia a una base externa como Supabase,
+Neon, Turso o Postgres. Si no, los votos pueden perderse.
