@@ -35,12 +35,28 @@ body {
 }
 
 button,
-input {
+input,
+a {
   font: inherit;
 }
 
-button {
+button,
+a {
   cursor: pointer;
+}
+
+input {
+  min-width: 0;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  padding: 12px 13px;
+  color: var(--ink);
+  background: #fff;
+}
+
+input:focus {
+  border-color: var(--green);
+  outline: 3px solid rgba(31, 138, 99, 0.18);
 }
 
 .app-shell {
@@ -253,41 +269,81 @@ h3 {
   padding: 20px;
 }
 
-.vote-panel label {
+.auth-panel {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 14px;
+  margin-bottom: 18px;
+  padding-bottom: 18px;
+  border-bottom: 1px solid var(--line);
+}
+
+.auth-panel strong,
+.auth-panel span {
   display: block;
-  margin-bottom: 8px;
+}
+
+.auth-panel span {
+  margin-top: 3px;
   color: var(--muted);
   font-size: 0.9rem;
   font-weight: 700;
 }
 
-.vote-row {
-  display: grid;
-  grid-template-columns: minmax(0, 1fr) auto auto;
+.account-card,
+.auth-actions,
+.vote-actions {
+  display: flex;
+  align-items: center;
   gap: 10px;
 }
 
-input {
-  min-width: 0;
-  border: 1px solid var(--line);
-  border-radius: 8px;
-  padding: 13px 14px;
-  color: var(--ink);
-  background: #fff;
+.dev-login-form {
+  display: flex;
+  gap: 8px;
 }
 
-input:focus {
-  border-color: var(--green);
-  outline: 3px solid rgba(31, 138, 99, 0.18);
+.dev-login-form input {
+  width: 150px;
+}
+
+.avatar {
+  width: 42px;
+  height: 42px;
+  flex: 0 0 auto;
+  border-radius: 50%;
+  object-fit: cover;
+  background: var(--ink);
+  color: #fff;
+}
+
+.avatar-fallback {
+  display: grid;
+  place-items: center;
+  font-weight: 900;
+}
+
+.vote-row {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 14px;
 }
 
 .ghost-button,
-.danger-button,
-.vote-button {
+.vote-button,
+.login-button,
+.ghost-link,
+.login-disabled {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
   border: 0;
   border-radius: 8px;
   padding: 13px 14px;
   font-weight: 800;
+  text-decoration: none;
 }
 
 .ghost-button {
@@ -295,9 +351,35 @@ input:focus {
   background: #edf2ef;
 }
 
-.danger-button {
+.vote-button,
+.login-button {
   color: #fff;
-  background: var(--danger);
+  background: var(--ink);
+}
+
+.ghost-link {
+  color: var(--ink);
+  background: #edf2ef;
+}
+
+.login-disabled {
+  color: var(--muted);
+  background: #edf2ef;
+}
+
+.selection-counter {
+  min-width: 58px;
+  border-radius: 999px;
+  padding: 8px 10px;
+  background: #edf2ef;
+  color: var(--ink);
+  text-align: center;
+  font-weight: 900;
+}
+
+button:disabled {
+  cursor: not-allowed;
+  opacity: 0.5;
 }
 
 .status-message {
@@ -407,16 +489,33 @@ input:focus {
 }
 
 .game-card {
-  display: grid;
-  grid-template-rows: 132px 1fr auto;
-  gap: 12px;
   min-height: 272px;
-  padding: 12px;
+  padding: 0;
   border: 1px solid var(--line);
   border-radius: 8px;
   background: var(--panel);
   box-shadow: 0 10px 26px rgba(33, 39, 34, 0.08);
   overflow: hidden;
+}
+
+.game-card.selected {
+  border-color: var(--green);
+  box-shadow:
+    0 0 0 3px rgba(31, 138, 99, 0.16),
+    0 14px 32px rgba(33, 39, 34, 0.14);
+}
+
+.game-toggle {
+  width: 100%;
+  min-height: 272px;
+  display: grid;
+  grid-template-rows: 140px 1fr;
+  gap: 12px;
+  border: 0;
+  padding: 12px;
+  background: transparent;
+  color: inherit;
+  text-align: left;
 }
 
 .game-art {
@@ -453,13 +552,26 @@ input:focus {
   transform: scale(1.02);
 }
 
-.game-initials {
+.checkmark {
   position: relative;
   z-index: 1;
-  font-size: 2.3rem;
-  font-weight: 950;
-  line-height: 1;
+  width: 38px;
+  height: 38px;
+  display: grid;
+  place-items: center;
+  border: 2px solid rgba(255, 255, 255, 0.7);
+  border-radius: 50%;
+  background: rgba(0, 0, 0, 0.35);
+  color: #fff;
   opacity: 0;
+  font-size: 1.1rem;
+  font-weight: 950;
+}
+
+.game-card.selected .checkmark {
+  opacity: 1;
+  background: var(--green);
+  border-color: #fff;
 }
 
 .game-price-badge {
@@ -480,6 +592,12 @@ input:focus {
   line-height: 1.2;
 }
 
+.game-body {
+  display: grid;
+  align-content: start;
+  gap: 9px;
+}
+
 .game-meta {
   display: flex;
   align-items: center;
@@ -488,12 +606,6 @@ input:focus {
   color: var(--muted);
   font-size: 0.88rem;
   font-weight: 700;
-}
-
-.vote-button {
-  align-self: end;
-  color: #fff;
-  background: var(--ink);
 }
 
 .vote-button:hover {
@@ -537,7 +649,10 @@ input:focus {
   color: var(--muted);
 }
 
-.ranking-price {
+.ranking-subline {
+  display: flex;
+  justify-content: space-between;
+  gap: 10px;
   color: var(--muted);
   font-size: 0.82rem;
   font-weight: 800;
@@ -613,9 +728,23 @@ input:focus {
   }
 
   .vote-row,
+  .auth-panel,
   .content-grid,
   .podium {
     grid-template-columns: 1fr;
+  }
+
+  .auth-panel,
+  .vote-row,
+  .auth-actions,
+  .dev-login-form,
+  .vote-actions {
+    align-items: stretch;
+    flex-direction: column;
+  }
+
+  .dev-login-form input {
+    width: 100%;
   }
 
   .podium-card.first,

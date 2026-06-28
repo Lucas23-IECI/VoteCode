@@ -27,19 +27,24 @@
           </div>
           <div class="summary-pill">
             <span id="total-votes">0</span>
-            <small>votos</small>
+            <small id="total-votes-label">papeletas</small>
           </div>
         </div>
       </section>
 
       <section class="vote-panel" aria-label="Panel de votacion">
-        <label for="friend-name">Nombre del amigo</label>
+        <div id="auth-panel" class="auth-panel"></div>
         <div class="vote-row">
-          <input id="friend-name" type="text" placeholder="Ej: Nico" autocomplete="off" />
-          <button id="undo-vote" class="ghost-button" type="button">Deshacer</button>
-          <button id="reset-votes" class="danger-button" type="button">Reiniciar</button>
+          <div>
+            <h2>Tu papeleta</h2>
+            <p id="status-message" class="status-message" aria-live="polite">Cargando...</p>
+          </div>
+          <div class="vote-actions">
+            <span id="selection-counter" class="selection-counter">0/10</span>
+            <button id="clear-selection" class="ghost-button" type="button">Limpiar</button>
+            <button id="save-votes" class="vote-button" type="button">Guardar voto</button>
+          </div>
         </div>
-        <p id="status-message" class="status-message" aria-live="polite"></p>
       </section>
 
       <section class="podium-section" aria-labelledby="podium-title">
@@ -58,7 +63,7 @@
           <div id="ranking-list" class="ranking-list"></div>
 
           <div class="history-block">
-            <h3>Ultimos votos</h3>
+            <h3>Ultimas papeletas</h3>
             <ol id="vote-history" class="vote-history"></ol>
           </div>
         </aside>

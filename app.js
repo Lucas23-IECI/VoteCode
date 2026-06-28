@@ -1,161 +1,37 @@
-const games = [
-  {
-    id: "rv-there-yet",
-    name: "RV THERE YET",
-    price: 3290,
-    accent: "#19736f",
-    image: "./assets/rv-there-yet.jpg",
-  },
-  {
-    id: "sons-of-the-forest",
-    name: "SONS OF THE FOREST",
-    price: 4650,
-    accent: "#263238",
-    image: "./assets/sons-of-the-forest.jpg",
-  },
-  {
-    id: "risk-of-ran-2",
-    name: "RISK OF RAIN 2",
-    price: 3960,
-    accent: "#bd4f2f",
-    image: "./assets/risk-of-rain-2.jpg",
-  },
-  {
-    id: "plague-inc",
-    name: "PLAGUE INC",
-    price: 830,
-    accent: "#566b2f",
-    image: "./assets/plague-inc.jpg",
-  },
-  {
-    id: "super-battle-golf",
-    name: "SUPER BATTLE GOLF",
-    price: 2800,
-    accent: "#2f6fca",
-    image: "./assets/super-battle-golf.jpg",
-  },
-  {
-    id: "gamble-with-your-friends",
-    name: "GAMBLE WITH YOUR FRIENDS",
-    price: 2914,
-    accent: "#8f3f97",
-    image: "./assets/gamble-with-your-friends.jpg",
-  },
-  {
-    id: "golf-with-your-friends",
-    name: "GOLF WITH YOUR FRIENDS",
-    price: 1190,
-    accent: "#1f8a63",
-    image: "./assets/golf-with-your-friends.jpg",
-  },
-  {
-    id: "escape-the-backrooms",
-    name: "ESCAPE THE BACKROOMS",
-    price: 3384,
-    accent: "#c99b38",
-    image: "./assets/escape-the-backrooms.jpg",
-  },
-  {
-    id: "gang-beast",
-    name: "GANG BEASTS",
-    price: 4200,
-    accent: "#d95d39",
-    image: "./assets/gang-beast.jpg",
-  },
-  {
-    id: "deathsprint-66",
-    name: "DEATHSPRINT 66",
-    price: 1925,
-    accent: "#4657a8",
-    image: "./assets/deathsprint-66.jpg",
-  },
-];
-
-const storageKey = "votacion-juegos:v1";
 const pesoFormatter = new Intl.NumberFormat("es-CL");
 
 const els = {
-  friendName: document.querySelector("#friend-name"),
   gamesList: document.querySelector("#games-list"),
   podium: document.querySelector("#podium"),
   rankingList: document.querySelector("#ranking-list"),
   voteHistory: document.querySelector("#vote-history"),
   totalVotes: document.querySelector("#total-votes"),
+  totalVotesLabel: document.querySelector("#total-votes-label"),
   statusMessage: document.querySelector("#status-message"),
-  undoVote: document.querySelector("#undo-vote"),
-  resetVotes: document.querySelector("#reset-votes"),
+  authPanel: document.querySelector("#auth-panel"),
+  saveVotes: document.querySelector("#save-votes"),
+  clearSelection: document.querySelector("#clear-selection"),
+  selectionCounter: document.querySelector("#selection-counter"),
 };
 
-let state = normalizeState(loadState());
-saveState();
-
-function loadState() {
-  try {
-    const stored = JSON.parse(localStorage.getItem(storageKey));
-    if (stored && Array.isArray(stored.votes)) {
-      return stored;
-    }
-  } catch {
-    // Start fresh if the browser has invalid saved data.
-  }
-
-  return { votes: [] };
-}
-
-function normalizeName(value) {
-  return value
-    .trim()
-    .normalize("NFD")
-    .replace(/[\u0300-\u036f]/g, "")
-    .replace(/\s+/g, " ")
-    .toLowerCase();
-}
-
-function normalizeState(rawState) {
-  const votesByPerson = new Map();
-
-  for (const vote of rawState.votes) {
-    const game = getGame(vote.gameId);
-    const friend = String(vote.friend || "").trim();
-    const voterKey = vote.voterKey || normalizeName(friend);
-
-    if (!game || !friend || !voterKey) continue;
-
-    votesByPerson.set(voterKey, {
-      id: vote.id || createVoteId(),
-      friend,
-      voterKey,
-      gameId: game.id,
-      createdAt: vote.createdAt || new Date().toISOString(),
-    });
-  }
-
-  return { votes: [...votesByPerson.values()] };
-}
-
-function saveState() {
-  localStorage.setItem(storageKey, JSON.stringify(state));
-}
+let state = {
+  user: null,
+  auth: { googleEnabled: false, devLoginEnabled: false },
+  rules: { minVotes: 3, maxVotes: 10 },
+  games: [],
+  results: [],
+  myVotes: new Set(),
+  totalBallots: 0,
+  totalSelections: 0,
+  recentBallots: [],
+};
 
 function formatPrice(value) {
   return `$${pesoFormatter.format(value)}`;
 }
 
-function getInitials(name) {
-  return name
-    .split(" ")
-    .filter(Boolean)
-    .slice(0, 3)
-    .map((word) => word[0])
-    .join("");
-}
-
-function createVoteId() {
-  return crypto.randomUUID ? crypto.randomUUID() : String(Date.now());
-}
-
 function escapeHtml(value) {
-  return value.replace(/[&<>"']/g, (char) => {
+  return String(value).replace(/[&<>"']/g, (char) => {
     const entities = {
       "&": "&amp;",
       "<": "&lt;",
@@ -168,160 +44,155 @@ function escapeHtml(value) {
   });
 }
 
-function getGame(gameId) {
-  return games.find((game) => game.id === gameId);
+async function apiRequest(url, options = {}) {
+  const response = await fetch(url, {
+    headers: {
+      "Content-Type": "application/json",
+      ...(options.headers || {}),
+    },
+    ...options,
+  });
+
+  const data = await response.json().catch(() => ({}));
+
+  if (!response.ok) {
+    throw new Error(data.error || "No se pudo completar la accion.");
+  }
+
+  return data;
 }
 
-function getResults() {
-  const counts = Object.fromEntries(games.map((game) => [game.id, 0]));
-
-  for (const vote of state.votes) {
-    if (counts[vote.gameId] !== undefined) {
-      counts[vote.gameId] += 1;
-    }
-  }
-
-  return games
-    .map((game, index) => ({
-      ...game,
-      index,
-      votes: counts[game.id],
-    }))
-    .sort((a, b) => b.votes - a.votes || a.index - b.index);
-}
-
-function voteFor(gameId) {
-  const name = els.friendName.value.trim();
-  const voterKey = normalizeName(name);
-  const game = getGame(gameId);
-
-  if (!voterKey) {
-    els.statusMessage.textContent = "Primero escribe el nombre de quien vota.";
-    els.friendName.focus();
-    return;
-  }
-
-  const previousVoteIndex = state.votes.findIndex((vote) => vote.voterKey === voterKey);
-  const previousVote = state.votes[previousVoteIndex];
-
-  if (previousVote?.gameId === gameId) {
-    els.statusMessage.textContent = `${name} ya tenia su voto en ${game.name}.`;
-    els.friendName.value = "";
-    return;
-  }
-
-  if (previousVote) {
-    const previousGame = getGame(previousVote.gameId);
-    state.votes.splice(previousVoteIndex, 1);
-    state.votes.push({
-      ...previousVote,
-      friend: name,
-      voterKey,
-      gameId,
-      createdAt: new Date().toISOString(),
-    });
-    els.statusMessage.textContent = `${name} cambio su voto: ${previousGame.name} -> ${game.name}.`;
-  } else {
-    state.votes.push({
-      id: createVoteId(),
-      friend: name,
-      voterKey,
-      gameId,
-      createdAt: new Date().toISOString(),
-    });
-    els.statusMessage.textContent = `${name} voto por ${game.name}.`;
-  }
-
-  saveState();
-  els.friendName.value = "";
+async function loadState() {
+  const data = await apiRequest("/api/bootstrap");
+  applyServerState(data);
   render();
 }
 
-function undoLastVote() {
-  const lastVote = state.votes.pop();
+function applyServerState(data) {
+  state = {
+    ...state,
+    ...data,
+    myVotes: new Set(data.myVotes || []),
+  };
+}
 
-  if (!lastVote) {
-    els.statusMessage.textContent = "Todavia no hay votos para deshacer.";
+function sortedResults() {
+  return [...state.results].sort((a, b) => b.votes - a.votes || a.index - b.index);
+}
+
+function selectionIsValid() {
+  const count = state.myVotes.size;
+  return state.user && count >= state.rules.minVotes && count <= state.rules.maxVotes;
+}
+
+function renderAuth() {
+  if (state.user) {
+    const avatar = state.user.avatarUrl
+      ? `<img class="avatar" src="${state.user.avatarUrl}" alt="" />`
+      : `<span class="avatar avatar-fallback">${escapeHtml(state.user.name.slice(0, 1).toUpperCase())}</span>`;
+
+    els.authPanel.innerHTML = `
+      <div class="account-card">
+        ${avatar}
+        <div>
+          <strong>${escapeHtml(state.user.name)}</strong>
+          <span>${state.user.email ? escapeHtml(state.user.email) : "Sesion local"}</span>
+        </div>
+      </div>
+      <button id="logout-button" class="ghost-button" type="button">Salir</button>
+    `;
+
+    document.querySelector("#logout-button").addEventListener("click", logout);
     return;
   }
 
-  const game = getGame(lastVote.gameId);
-  saveState();
-  els.statusMessage.textContent = `Se deshizo el voto de ${lastVote.friend} por ${game.name}.`;
-  render();
+  const googleButton = state.auth.googleEnabled
+    ? '<a class="login-button" href="/auth/google">Entrar con Google</a>'
+    : '<span class="login-disabled">Google falta configurar</span>';
+  const devButton = state.auth.devLoginEnabled
+    ? `
+      <form id="dev-login-form" class="dev-login-form">
+        <input id="dev-login-name" type="text" placeholder="Nombre local" autocomplete="off" />
+        <button class="ghost-link" type="submit">Probar local</button>
+      </form>
+    `
+    : "";
+
+  els.authPanel.innerHTML = `
+    <div>
+      <strong>Inicia sesion para guardar tu voto</strong>
+      <span>Cada cuenta puede editar su papeleta.</span>
+    </div>
+    <div class="auth-actions">
+      ${googleButton}
+      ${devButton}
+    </div>
+  `;
+
+  document.querySelector("#dev-login-form")?.addEventListener("submit", (event) => {
+    event.preventDefault();
+    const name = document.querySelector("#dev-login-name").value.trim() || "Jugador local";
+    window.location.href = `/auth/dev?name=${encodeURIComponent(name)}`;
+  });
 }
 
-function resetVotes() {
-  if (!state.votes.length) {
-    els.statusMessage.textContent = "La votacion ya esta en cero.";
-    return;
-  }
+function renderGames() {
+  const resultById = Object.fromEntries(state.results.map((result) => [result.id, result]));
 
-  const confirmed = confirm("Esto borrara todos los votos guardados en este navegador. Continuar?");
-  if (!confirmed) return;
-
-  state = { votes: [] };
-  saveState();
-  els.statusMessage.textContent = "Votacion reiniciada.";
-  render();
-}
-
-function renderGames(results) {
-  const resultById = Object.fromEntries(results.map((result) => [result.id, result]));
-
-  els.gamesList.innerHTML = games
+  els.gamesList.innerHTML = state.games
     .map((game) => {
-      const result = resultById[game.id];
+      const result = resultById[game.id] || { votes: 0, percentage: 0 };
       const voteLabel = result.votes === 1 ? "1 voto" : `${result.votes} votos`;
+      const selected = state.myVotes.has(game.id);
 
       return `
-        <article class="game-card">
-          <div class="game-art" style="--accent: ${game.accent}">
-            <img src="${game.image}" alt="Imagen de ${game.name}" loading="lazy" />
-            <span class="game-initials">${getInitials(game.name)}</span>
-            <span class="game-price-badge">${formatPrice(game.price)}</span>
-          </div>
-          <div>
-            <h3 class="game-title">${game.name}</h3>
-            <div class="game-meta">
-              <span>Precio</span>
-              <span>${voteLabel}</span>
+        <article class="game-card ${selected ? "selected" : ""}">
+          <button class="game-toggle" type="button" data-game-id="${game.id}" aria-pressed="${selected}">
+            <div class="game-art" style="--accent: ${game.accent}">
+              <img src="${game.image}" alt="Imagen de ${game.name}" loading="lazy" />
+              <span class="checkmark">✓</span>
+              <span class="game-price-badge">${formatPrice(game.price)}</span>
             </div>
-          </div>
-          <button class="vote-button" type="button" data-game-id="${game.id}">Sumar voto</button>
+            <div class="game-body">
+              <h3 class="game-title">${game.name}</h3>
+              <div class="game-meta">
+                <span>${voteLabel}</span>
+                <span>${result.percentage}%</span>
+              </div>
+            </div>
+          </button>
         </article>
       `;
     })
     .join("");
 
   els.gamesList.querySelectorAll("[data-game-id]").forEach((button) => {
-    button.addEventListener("click", () => voteFor(button.dataset.gameId));
+    button.addEventListener("click", () => toggleGame(button.dataset.gameId));
   });
 }
 
-function renderPodium(results) {
-  const podium = results.slice(0, 3);
+function renderPodium() {
+  const podium = sortedResults().slice(0, 3);
   const classes = ["first", "second", "third"];
 
-  if (!state.votes.length) {
-    els.podium.innerHTML = '<p class="empty-state">El podio aparecera cuando entren los primeros votos.</p>';
+  if (!state.totalBallots) {
+    els.podium.innerHTML = '<p class="empty-state">El podio aparecera cuando entren las primeras papeletas.</p>';
     return;
   }
 
   els.podium.innerHTML = podium
     .map((game, index) => {
       const voteLabel = game.votes === 1 ? "1 voto" : `${game.votes} votos`;
-      const height = `${100 - index * 18}%`;
 
       return `
-        <article class="podium-card ${classes[index]}" style="--height: ${height}; --accent: ${game.accent}">
+        <article class="podium-card ${classes[index]}" style="--accent: ${game.accent}">
           <img src="${game.image}" alt="Imagen de ${game.name}" />
           <span class="place">#${index + 1}</span>
           <div>
             <p class="podium-name">${game.name}</p>
             <div class="podium-meta">
               <span>${voteLabel}</span>
-              <span>${formatPrice(game.price)}</span>
+              <span>${game.percentage}%</span>
             </div>
           </div>
         </article>
@@ -330,12 +201,9 @@ function renderPodium(results) {
     .join("");
 }
 
-function renderRanking(results) {
-  const topVotes = Math.max(...results.map((game) => game.votes), 1);
-
-  els.rankingList.innerHTML = results
+function renderRanking() {
+  els.rankingList.innerHTML = sortedResults()
     .map((game, index) => {
-      const percentage = Math.round((game.votes / topVotes) * 100);
       const voteLabel = game.votes === 1 ? "1 voto" : `${game.votes} votos`;
 
       return `
@@ -344,9 +212,12 @@ function renderRanking(results) {
             <span class="ranking-title">#${index + 1} ${game.name}</span>
             <span class="ranking-score">${voteLabel}</span>
           </div>
-          <div class="ranking-price">${formatPrice(game.price)}</div>
+          <div class="ranking-subline">
+            <span>${formatPrice(game.price)}</span>
+            <strong>${game.percentage}%</strong>
+          </div>
           <div class="bar-track" aria-hidden="true">
-            <div class="bar-fill" style="--width: ${percentage}%"></div>
+            <div class="bar-fill" style="--width: ${game.percentage}%"></div>
           </div>
         </div>
       `;
@@ -355,37 +226,95 @@ function renderRanking(results) {
 }
 
 function renderHistory() {
-  const lastVotes = [...state.votes].reverse().slice(0, 8);
-
-  if (!lastVotes.length) {
-    els.voteHistory.innerHTML = '<li class="empty-state">Sin votos todavia.</li>';
+  if (!state.recentBallots.length) {
+    els.voteHistory.innerHTML = '<li class="empty-state">Sin papeletas todavia.</li>';
     return;
   }
 
-  els.voteHistory.innerHTML = lastVotes
-    .map((vote) => {
-      const game = getGame(vote.gameId);
-      return `<li><strong>${escapeHtml(vote.friend)}</strong>: ${game.name}</li>`;
+  els.voteHistory.innerHTML = state.recentBallots
+    .map((ballot) => {
+      const picks = ballot.picks === 1 ? "1 juego" : `${ballot.picks} juegos`;
+      return `<li><strong>${escapeHtml(ballot.display_name)}</strong>: ${picks}</li>`;
     })
     .join("");
 }
 
-function render() {
-  const results = getResults();
+function renderControls() {
+  const selectedCount = state.myVotes.size;
+  const remaining = Math.max(state.rules.minVotes - selectedCount, 0);
 
-  els.totalVotes.textContent = state.votes.length;
-  renderGames(results);
-  renderPodium(results);
-  renderRanking(results);
-  renderHistory();
+  els.totalVotes.textContent = state.totalBallots;
+  els.totalVotesLabel.textContent = state.totalBallots === 1 ? "papeleta" : "papeletas";
+  els.selectionCounter.textContent = `${selectedCount}/${state.rules.maxVotes}`;
+  els.saveVotes.disabled = !selectionIsValid();
+  els.clearSelection.disabled = !state.user || selectedCount === 0;
+
+  if (!state.user) {
+    els.statusMessage.textContent = "Entra con una cuenta para votar.";
+  } else if (remaining) {
+    els.statusMessage.textContent = `Te faltan ${remaining} seleccion(es) para guardar.`;
+  } else {
+    els.statusMessage.textContent = "Listo para guardar tu papeleta.";
+  }
 }
 
-els.undoVote.addEventListener("click", undoLastVote);
-els.resetVotes.addEventListener("click", resetVotes);
-els.friendName.addEventListener("keydown", (event) => {
-  if (event.key === "Enter") {
-    els.statusMessage.textContent = "Elige un juego para registrar el voto.";
+function render() {
+  renderAuth();
+  renderGames();
+  renderPodium();
+  renderRanking();
+  renderHistory();
+  renderControls();
+}
+
+function toggleGame(gameId) {
+  if (!state.user) {
+    els.statusMessage.textContent = "Primero inicia sesion.";
+    return;
   }
+
+  if (state.myVotes.has(gameId)) {
+    state.myVotes.delete(gameId);
+  } else {
+    state.myVotes.add(gameId);
+  }
+
+  renderGames();
+  renderControls();
+}
+
+async function saveVotes() {
+  if (!selectionIsValid()) return;
+
+  els.saveVotes.disabled = true;
+  els.statusMessage.textContent = "Guardando...";
+
+  try {
+    const data = await apiRequest("/api/votes", {
+      method: "POST",
+      body: JSON.stringify({ gameIds: [...state.myVotes] }),
+    });
+    applyServerState({ ...data, user: state.user, auth: state.auth, rules: state.rules, games: state.games });
+    els.statusMessage.textContent = "Papeleta guardada.";
+    render();
+  } catch (error) {
+    els.statusMessage.textContent = error.message;
+    renderControls();
+  }
+}
+
+async function logout() {
+  await apiRequest("/auth/logout", { method: "POST" });
+  window.location.reload();
+}
+
+els.saveVotes.addEventListener("click", saveVotes);
+els.clearSelection.addEventListener("click", () => {
+  state.myVotes.clear();
+  renderGames();
+  renderControls();
 });
 
-render();
+loadState().catch((error) => {
+  els.statusMessage.textContent = error.message;
+});
