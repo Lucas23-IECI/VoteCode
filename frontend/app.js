@@ -150,11 +150,26 @@ async function initialize() {
   }
 
   supabaseClient = window.supabase.createClient(config.supabaseUrl, config.supabaseAnonKey);
+
+  state.results = buildResults([]);
+  render();
+
   supabaseClient.auth.onAuthStateChange(async () => {
-    await loadState();
+    await loadStateSafely();
   });
 
-  await loadState();
+  await loadStateSafely();
+}
+
+async function loadStateSafely() {
+  try {
+    await loadState();
+  } catch (error) {
+    console.error("Error loading VoteCode state:", error);
+    state.results = state.results.length ? state.results : buildResults([]);
+    render();
+    els.statusMessage.textContent = "No se pudo cargar Supabase. Revisa SQL/RLS o recarga la pagina.";
+  }
 }
 
 async function loadState() {
