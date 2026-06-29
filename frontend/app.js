@@ -232,6 +232,25 @@ window.onGoogleLibraryLoad = function() {
   }
 };
 
+function checkAndClearUrlErrors() {
+  const urlParams = new URLSearchParams(window.location.search);
+  if (urlParams.has("error") || urlParams.has("error_description")) {
+    const errorMsg = urlParams.get("error_description") || urlParams.get("error") || "Error de autenticación";
+    console.warn("OAuth error detected in URL:", errorMsg);
+    
+    // We set the status message later after DOM renders, but let's schedule it
+    setTimeout(() => {
+      if (els.statusMessage) {
+        els.statusMessage.textContent = `Error: ${errorMsg}. Intenta iniciar sesión otra vez.`;
+      }
+    }, 100);
+    
+    // Clean URL query parameters without reloading
+    const cleanUrl = window.location.origin + window.location.pathname;
+    window.history.replaceState({}, document.title, cleanUrl);
+  }
+}
+
 async function initialize() {
   state.configured = isConfigured();
 
@@ -242,6 +261,9 @@ async function initialize() {
     return;
   }
 
+  // Limpiar errores del URL antes de inicializar para evitar bucles de errores
+  checkAndClearUrlErrors();
+
   supabaseClient = window.supabase.createClient(config.supabaseUrl, config.supabaseAnonKey);
   
   initGoogleAuth();
@@ -249,27 +271,54 @@ async function initialize() {
   supabaseClient.auth.onAuthStateChange(async () => {
     await loadState();
   });
-
-  await loadState();
 }
 
+let isStateLoading = false;
+
 async function loadState() {
-  const { data: sessionData, error: sessionError } = await supabaseClient.auth.getSession();
-  if (sessionError) throw sessionError;
+  if (isStateLoading) return;
+  isStateLoading = true;
 
-  const user = sessionData.session?.user || null;
-  state.user = user ? getUserDisplay(user) : null;
+  try {
+    const { data: sessionData, error: sessionError } = await supabaseClient.auth.getSession();
+    if (sessionError) throw sessionError;
 
-  if (user) {
-    await upsertProfile(user);
+    const user = sessionData.session?.user || null;
+    state.user = user ? getUserDisplay(user) : null;
+
+    if (user) {
+      try {
+        await upsertProfile(user);
+      } catch (profileError) {
+        console.error("Error updating profile:", profileError);
+      }
+    }
+
+    const [votes, myVotes] = await Promise.all([
+      fetchVotes(),
+      user ? fetchMyVotes(user.id) : []
+    ]);
+    state.results = buildResults(votes);
+    state.myVotes = new Set(myVotes);
+    state.recentBallots = buildRecentBallots(votes);
+
+    // Si no hay un mensaje de error previo ya mostrado en statusMessage, lo limpiamos
+    if (els.statusMessage && !els.statusMessage.textContent.startsWith("Error:")) {
+      els.statusMessage.textContent = "";
+    }
+    
+    render();
+  } catch (error) {
+    console.error("Error loading application state:", error);
+    if (els.statusMessage && !els.statusMessage.textContent.startsWith("Error:")) {
+      els.statusMessage.textContent = "Error al cargar datos. Intenta recargar la página.";
+    }
+    // Renderizamos al menos los juegos estáticos para que la página no quede vacía
+    state.results = buildResults([]);
+    render();
+  } finally {
+    isStateLoading = false;
   }
-
-  const [votes, myVotes] = await Promise.all([fetchVotes(), user ? fetchMyVotes(user.id) : []]);
-  state.results = buildResults(votes);
-  state.myVotes = new Set(myVotes);
-  state.recentBallots = buildRecentBallots(votes);
-
-  render();
 }
 
 async function upsertProfile(user) {
