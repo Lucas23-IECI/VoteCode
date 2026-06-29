@@ -209,28 +209,7 @@ function getUserDisplay(user) {
   };
 }
 
-let googleInitialized = false;
 
-function initGoogleAuth() {
-  if (googleInitialized) return true;
-  if (config.googleClientId && window.google) {
-    window.google.accounts.id.initialize({
-      client_id: config.googleClientId,
-      callback: handleGoogleSignIn,
-    });
-    googleInitialized = true;
-    return true;
-  }
-  return false;
-}
-
-window.onGoogleLibraryLoad = function() {
-  if (initGoogleAuth()) {
-    if (!state.user) {
-      renderAuth();
-    }
-  }
-};
 
 function checkAndClearUrlErrors() {
   const urlParams = new URLSearchParams(window.location.search);
@@ -451,24 +430,11 @@ function renderAuth() {
       <span>Cada cuenta puede editar su papeleta.</span>
     </div>
     <div class="auth-actions">
-      <div id="google-login-button-container"></div>
+      <button id="google-login-button" class="login-button" type="button">Entrar con Google</button>
     </div>
   `;
 
-  initGoogleAuth();
-
-  if (googleInitialized) {
-    window.google.accounts.id.renderButton(
-      document.getElementById("google-login-button-container"),
-      { theme: "outline", size: "large", text: "signin_with" }
-    );
-  } else {
-    const container = document.getElementById("google-login-button-container");
-    if (container) {
-      container.innerHTML = `<button id="google-login-button" class="login-button" type="button">Entrar con Google (Redirect)</button>`;
-      document.querySelector("#google-login-button").addEventListener("click", loginWithGoogle);
-    }
-  }
+  document.querySelector("#google-login-button").addEventListener("click", loginWithGoogle);
 }
 
 const activeIntervals = new Map();
@@ -720,18 +686,6 @@ async function loginWithGoogle() {
   }
 }
 
-async function handleGoogleSignIn(response) {
-  els.statusMessage.textContent = "Iniciando sesión con Google...";
-  try {
-    const { data, error } = await supabaseClient.auth.signInWithIdToken({
-      provider: 'google',
-      token: response.credential,
-    });
-    if (error) throw error;
-  } catch (error) {
-    els.statusMessage.textContent = error.message;
-  }
-}
 
 async function logout() {
   await supabaseClient.auth.signOut();
