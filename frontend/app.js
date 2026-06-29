@@ -150,6 +150,14 @@ async function initialize() {
   }
 
   supabaseClient = window.supabase.createClient(config.supabaseUrl, config.supabaseAnonKey);
+  
+  if (config.googleClientId && window.google) {
+    window.google.accounts.id.initialize({
+      client_id: config.googleClientId,
+      callback: handleGoogleSignIn,
+    });
+  }
+
   supabaseClient.auth.onAuthStateChange(async () => {
     await loadState();
   });
@@ -306,11 +314,22 @@ function renderAuth() {
       <span>Cada cuenta puede editar su papeleta.</span>
     </div>
     <div class="auth-actions">
-      <button id="google-login-button" class="login-button" type="button">Entrar con Google</button>
+      <div id="google-login-button-container"></div>
     </div>
   `;
 
-  document.querySelector("#google-login-button").addEventListener("click", loginWithGoogle);
+  if (config.googleClientId && window.google) {
+    window.google.accounts.id.renderButton(
+      document.getElementById("google-login-button-container"),
+      { theme: "outline", size: "large", text: "signin_with" }
+    );
+  } else {
+    const container = document.getElementById("google-login-button-container");
+    if (container) {
+      container.innerHTML = `<button id="google-login-button" class="login-button" type="button">Entrar con Google (Redirect)</button>`;
+      document.querySelector("#google-login-button").addEventListener("click", loginWithGoogle);
+    }
+  }
 }
 
 function renderGames() {
@@ -502,6 +521,19 @@ async function loginWithGoogle() {
   });
 
   if (error) {
+    els.statusMessage.textContent = error.message;
+  }
+}
+
+async function handleGoogleSignIn(response) {
+  els.statusMessage.textContent = "Iniciando sesión con Google...";
+  try {
+    const { data, error } = await supabaseClient.auth.signInWithIdToken({
+      provider: 'google',
+      token: response.credential,
+    });
+    if (error) throw error;
+  } catch (error) {
     els.statusMessage.textContent = error.message;
   }
 }
