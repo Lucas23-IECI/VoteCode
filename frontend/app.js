@@ -5,6 +5,11 @@ const games = [
     price: 3290,
     accent: "#19736f",
     image: "./assets/rv-there-yet.jpg",
+    previews: [
+      "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/3949040/ed2f7080c6622688a72a86ca85af600f2a2bdfb9/ss_ed2f7080c6622688a72a86ca85af600f2a2bdfb9.600x338.jpg?t=1778071815",
+      "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/3949040/7d246f94e4ec2ff4c7be3ded82bcdd558274d7c7/ss_7d246f94e4ec2ff4c7be3ded82bcdd558274d7c7.600x338.jpg?t=1778071815",
+      "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/3949040/f5663e0220e188d4c9db0789f0cbb4ddefd762d5/ss_f5663e0220e188d4c9db0789f0cbb4ddefd762d5.600x338.jpg?t=1778071815",
+    ],
   },
   {
     id: "sons-of-the-forest",
@@ -12,6 +17,11 @@ const games = [
     price: 4650,
     accent: "#263238",
     image: "./assets/sons-of-the-forest.jpg",
+    previews: [
+      "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/1326470/ss_e6e3ab1badfb287a77fb6eef7b1589a35371496b.600x338.jpg?t=1708624856",
+      "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/1326470/ss_4fa5d260318f0aa37754b00c5dc10d1b7b9b9b1d.600x338.jpg?t=1708624856",
+      "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/1326470/ss_2b67491ca913adea6953429e1a567824aaa0ed54.600x338.jpg?t=1708624856",
+    ],
   },
   {
     id: "risk-of-rain-2",
@@ -19,6 +29,11 @@ const games = [
     price: 3960,
     accent: "#bd4f2f",
     image: "./assets/risk-of-rain-2.jpg",
+    previews: [
+      "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/632360/ss_2bb49071317f7b241a527cf6e7aabd2cb6af055b.600x338.jpg?t=1782157681",
+      "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/632360/ss_a3f57f281813cb51cb5d919701470acb962ff297.600x338.jpg?t=1782157681",
+      "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/632360/ss_328d6fcb223f848c2a1047bb86702c4175d92317.600x338.jpg?t=1782157681",
+    ],
   },
   {
     id: "plague-inc",
@@ -26,6 +41,11 @@ const games = [
     price: 830,
     accent: "#566b2f",
     image: "./assets/plague-inc.jpg",
+    previews: [
+      "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/246620/ss_9a5c4d45543113ad9de9d9b928f6fadf1fa17d25.600x338.jpg?t=1779100239",
+      "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/246620/ss_7feb2722dd1e712cb5af17356fcec7fa393a2339.600x338.jpg?t=1779100239",
+      "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/246620/ss_b0d8d993edec2bfb764d0748de6f27eeded7c7af.600x338.jpg?t=1779100239",
+    ],
   },
   {
     id: "super-battle-golf",
@@ -33,6 +53,11 @@ const games = [
     price: 2800,
     accent: "#2f6fca",
     image: "./assets/super-battle-golf.jpg",
+    previews: [
+      "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/4069520/5de3d4f4a2063145fbeae398edaf9dc300ccfc65/ss_5de3d4f4a2063145fbeae398edaf9dc300ccfc65.600x338.jpg?t=1782374395",
+      "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/4069520/d1c2940cce43448a11bc2f232b95d08819b25def/ss_d1c2940cce43448a11bc2f232b95d08819b25def.600x338.jpg?t=1782374395",
+      "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/4069520/2e90632f818b8f7457edee5b5be38bc0ebcfd5b3/ss_2e90632f818b8f7457edee5b5be38bc0ebcfd5b3.600x338.jpg?t=1782374395",
+    ],
   },
   {
     id: "gamble-with-your-friends",
@@ -40,6 +65,11 @@ const games = [
     price: 2914,
     accent: "#8f3f97",
     image: "./assets/gamble-with-your-friends.jpg",
+    previews: [
+      "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/3892270/46a2a2c1593b57eb3b8948a68be504e8d91d3912/ss_46a2a2c1593b57eb3b8948a68be504e8d91d3912.600x338.jpg?t=1782258835",
+      "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/3892270/e3514d1723232a988324d08834e8784e6ad355c2/ss_e3514d1723232a988324d08834e8784e6ad355c2.600x338.jpg?t=1782258835",
+      "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/3892270/feeb63575e000a1a2127c4440f11bf8e0c4e428b/ss_feeb63575e000a1a2127c4440f11bf8e0c4e428b.600x338.jpg?t=1782258835",
+    ],
   },
   {
     id: "golf-with-your-friends",
@@ -47,6 +77,11 @@ const games = [
     price: 1190,
     accent: "#1f8a63",
     image: "./assets/golf-with-your-friends.jpg",
+    previews: [
+      "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/431240/ss_db651179701c4c78f89448506f6fe177585d28a7.600x338.jpg?t=1780479958",
+      "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/431240/ss_ca58d6c760d172df3875d9634ca35703d73a4d05.600x338.jpg?t=1780479958",
+      "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/431240/ss_91d45c28c463c2fc5d4d28f15f900e2456ccf73c.600x338.jpg?t=1780479958",
+    ],
   },
   {
     id: "escape-the-backrooms",
@@ -54,6 +89,11 @@ const games = [
     price: 3384,
     accent: "#c99b38",
     image: "./assets/escape-the-backrooms.jpg",
+    previews: [
+      "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/1943950/ss_391a7c8a4ff906726977d9d72f82c0336be46bfd.600x338.jpg?t=1782122172",
+      "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/1943950/7ec4526ee8cf906377d44ff5e0284e2f9191dcaa/ss_7ec4526ee8cf906377d44ff5e0284e2f9191dcaa.600x338.jpg?t=1782122172",
+      "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/1943950/31c55970a7cc9a08c6ff72ba165cc0124e2224f9/ss_31c55970a7cc9a08c6ff72ba165cc0124e2224f9.600x338.jpg?t=1782122172",
+    ],
   },
   {
     id: "gang-beasts",
@@ -61,6 +101,11 @@ const games = [
     price: 4200,
     accent: "#d95d39",
     image: "./assets/gang-beast.jpg",
+    previews: [
+      "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/285900/ss_0476d6b0403313cb4fa727fd99146762eb80f611.600x338.jpg?t=1780410654",
+      "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/285900/ss_0e7190e5cee562fa851f23bfeb65b336550a6d18.600x338.jpg?t=1780410654",
+      "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/285900/ss_1778496dc8675159f7cb7ded7f6806ad4c1e2ccf.600x338.jpg?t=1780410654",
+    ],
   },
   {
     id: "deathsprint-66",
@@ -68,6 +113,11 @@ const games = [
     price: 1925,
     accent: "#4657a8",
     image: "./assets/deathsprint-66.jpg",
+    previews: [
+      "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/1273560/ss_96c06df76c53e77793b240ec3858356490370348.600x338.jpg?t=1782410321",
+      "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/1273560/ss_e3d885f43e714496a02fd3d8ec106f266ef6d131.600x338.jpg?t=1782410321",
+      "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/1273560/ss_6793979af8626cb28e62dc24aa5110dc10d2dae5.600x338.jpg?t=1782410321",
+    ],
   },
 ];
 
@@ -424,12 +474,19 @@ function renderGames() {
       const result = resultById[game.id] || { votes: 0, percentage: 0 };
       const voteLabel = result.votes === 1 ? "1 voto" : `${result.votes} votos`;
       const selected = state.myVotes.has(game.id);
+      const previewImages = game.previews
+        .map(
+          (src, index) =>
+            `<img src="${src}" alt="Preview de ${game.name}" loading="lazy" style="--preview-index: ${index}" />`
+        )
+        .join("");
 
       return `
         <article class="game-card ${selected ? "selected" : ""}">
           <button class="game-toggle" type="button" data-game-id="${game.id}" aria-pressed="${selected}">
             <div class="game-art" style="--accent: ${game.accent}">
               <img src="${game.image}" alt="Imagen de ${game.name}" loading="lazy" />
+              <div class="game-preview" aria-hidden="true">${previewImages}</div>
               <span class="checkmark">OK</span>
               <span class="game-price-badge">${formatPrice(game.price)}</span>
             </div>
