@@ -158,7 +158,19 @@ async function initialize() {
     await loadStateSafely();
   });
 
-  await loadStateSafely();
+  await loadPublicVotesSafely();
+  loadStateSafely();
+}
+
+async function loadPublicVotesSafely() {
+  try {
+    const votes = await fetchVotes();
+    state.results = buildResults(votes);
+    state.recentBallots = buildRecentBallots(votes);
+    render();
+  } catch (error) {
+    console.error("Error loading public VoteCode results:", error);
+  }
 }
 
 async function loadStateSafely() {
@@ -173,6 +185,11 @@ async function loadStateSafely() {
 }
 
 async function loadState() {
+  const votes = await fetchVotes();
+  state.results = buildResults(votes);
+  state.recentBallots = buildRecentBallots(votes);
+  render();
+
   const { data: sessionData, error: sessionError } = await supabaseClient.auth.getSession();
   if (sessionError) throw sessionError;
 
@@ -183,10 +200,8 @@ async function loadState() {
     await upsertProfile(user);
   }
 
-  const [votes, myVotes] = await Promise.all([fetchVotes(), user ? fetchMyVotes(user.id) : []]);
-  state.results = buildResults(votes);
+  const myVotes = user ? await fetchMyVotes(user.id) : [];
   state.myVotes = new Set(myVotes);
-  state.recentBallots = buildRecentBallots(votes);
 
   render();
 }
