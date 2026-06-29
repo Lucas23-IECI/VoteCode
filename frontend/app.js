@@ -6,6 +6,12 @@ const games = [
     accent: "#19736f",
     image: "./assets/rv-there-yet.jpg",
     appId: 3949040,
+    screenshots: [
+      "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/3949040/ed2f7080c6622688a72a86ca85af600f2a2bdfb9/ss_ed2f7080c6622688a72a86ca85af600f2a2bdfb9.600x338.jpg?t=1778071815",
+      "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/3949040/7d246f94e4ec2ff4c7be3ded82bcdd558274d7c7/ss_7d246f94e4ec2ff4c7be3ded82bcdd558274d7c7.600x338.jpg?t=1778071815",
+      "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/3949040/f5663e0220e188d4c9db0789f0cbb4ddefd762d5/ss_f5663e0220e188d4c9db0789f0cbb4ddefd762d5.600x338.jpg?t=1778071815",
+      "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/3949040/9face7033df9bd0274428d6215711c5dec20f245/ss_9face7033df9bd0274428d6215711c5dec20f245.600x338.jpg?t=1778071815"
+    ]
   },
   {
     id: "sons-of-the-forest",
@@ -14,6 +20,12 @@ const games = [
     accent: "#263238",
     image: "./assets/sons-of-the-forest.jpg",
     appId: 1326470,
+    screenshots: [
+      "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/1326470/ss_e6e3ab1badfb287a77fb6eef7b1589a35371496b.600x338.jpg?t=1708624856",
+      "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/1326470/ss_4fa5d260318f0aa37754b00c5dc10d1b7b9b9b1d.600x338.jpg?t=1708624856",
+      "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/1326470/ss_2b67491ca913adea6953429e1a567824aaa0ed54.600x338.jpg?t=1708624856",
+      "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/1326470/ss_ba2c1f6e69c6c7d69f7965cbd4b78da59ec59d55.600x338.jpg?t=1708624856"
+    ]
   },
   {
     id: "risk-of-rain-2",
@@ -22,6 +34,12 @@ const games = [
     accent: "#bd4f2f",
     image: "./assets/risk-of-rain-2.jpg",
     appId: 632360,
+    screenshots: [
+      "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/632360/ss_2bb49071317f7b241a527cf6e7aabd2cb6af055b.600x338.jpg?t=1782157681",
+      "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/632360/ss_a3f57f281813cb51cb5d919701470acb962ff297.600x338.jpg?t=1782157681",
+      "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/632360/ss_328d6fcb223f848c2a1047bb86702c4175d92317.600x338.jpg?t=1782157681",
+      "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/632360/ss_dc777b5c583794c99440b196cd1d26884fb1720b.600x338.jpg?t=1782157681"
+    ]
   },
   {
     id: "plague-inc",
@@ -30,6 +48,12 @@ const games = [
     accent: "#566b2f",
     image: "./assets/plague-inc.jpg",
     appId: 246620,
+    screenshots: [
+      "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/246620/ss_9a5c4d45543113ad9de9d9b928f6fadf1fa17d25.600x338.jpg?t=1779100239",
+      "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/246620/ss_7feb2722dd1e712cb5af17356fcec7fa393a2339.600x338.jpg?t=1779100239",
+      "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/246620/ss_b0d8d993edec2bfb764d0748de6f27eeded7c7af.600x338.jpg?t=1779100239",
+      "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/246620/ss_56ede6cad5f4e6732a4640416716bb1642e8fa21.600x338.jpg?t=1779100239"
+    ]
   },
   {
     id: "super-battle-golf",
@@ -38,6 +62,12 @@ const games = [
     accent: "#2f6fca",
     image: "./assets/super-battle-golf.jpg",
     appId: 4069520,
+    screenshots: [
+      "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/4069520/5de3d4f4a2063145fbeae398edaf9dc300ccfc65/ss_5de3d4f4a2063145fbeae398edaf9dc300ccfc65.600x338.jpg?t=1782374395",
+      "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/4069520/d1c2940cce43448a11bc2f232b95d08819b25def/ss_d1c2940cce43448a11bc2f232b95d08819b25def.600x338.jpg?t=1782374395",
+      "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/4069520/2e90632f818b8f7457edee5b5be38bc0ebcfd5b3/ss_2e90632f818b8f7457edee5b5be38bc0ebcfd5b3.600x338.jpg?t=1782374395",
+      "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/4069520/698f5acea2aa6cec71d240f3b0c98fa1a39c870e/ss_698f5acea2aa6cec71d240f3b0c98fa1a39c870e.600x338.jpg?t=1782374395"
+    ]
   },
   {
     id: "gamble-with-your-friends",
@@ -46,6 +76,12 @@ const games = [
     accent: "#8f3f97",
     image: "./assets/gamble-with-your-friends.jpg",
     appId: 3892270,
+    screenshots: [
+      "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/3892270/46a2a2c1593b57eb3b8948a68be504e8d91d3912/ss_46a2a2c1593b57eb3b8948a68be504e8d91d3912.600x338.jpg?t=1782258835",
+      "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/3892270/e3514d1723232a988324d08834e8784e6ad355c2/ss_e3514d1723232a988324d08834e8784e6ad355c2.600x338.jpg?t=1782258835",
+      "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/3892270/feeb63575e000a1a2127c4440f11bf8e0c4e428b/ss_feeb63575e000a1a2127c4440f11bf8e0c4e428b.600x338.jpg?t=1782258835",
+      "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/3892270/cfb1d0bb25fe2af094eec6b5fb32726c684e423e/ss_cfb1d0bb25fe2af094eec6b5fb32726c684e423e.600x338.jpg?t=1782258835"
+    ]
   },
   {
     id: "golf-with-your-friends",
@@ -54,6 +90,12 @@ const games = [
     accent: "#1f8a63",
     image: "./assets/golf-with-your-friends.jpg",
     appId: 431240,
+    screenshots: [
+      "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/431240/ss_db651179701c4c78f89448506f6fe177585d28a7.600x338.jpg?t=1780479958",
+      "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/431240/ss_ca58d6c760d172df3875d9634ca35703d73a4d05.600x338.jpg?t=1780479958",
+      "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/431240/ss_91d45c28c463c2fc5d4d28f15f900e2456ccf73c.600x338.jpg?t=1780479958",
+      "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/431240/ss_af779fcd049a35140f47ff8781eec8d0e5d7d7bd.600x338.jpg?t=1780479958"
+    ]
   },
   {
     id: "escape-the-backrooms",
@@ -62,6 +104,12 @@ const games = [
     accent: "#c99b38",
     image: "./assets/escape-the-backrooms.jpg",
     appId: 1943950,
+    screenshots: [
+      "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/1943950/ss_391a7c8a4ff906726977d9d72f82c0336be46bfd.600x338.jpg?t=1782122172",
+      "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/1943950/7ec4526ee8cf906377d44ff5e0284e2f9191dcaa/ss_7ec4526ee8cf906377d44ff5e0284e2f9191dcaa.600x338.jpg?t=1782122172",
+      "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/1943950/31c55970a7cc9a08c6ff72ba165cc0124e2224f9/ss_31c55970a7cc9a08c6ff72ba165cc0124e2224f9.600x338.jpg?t=1782122172",
+      "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/1943950/de0d406d4946b22d174bb9ce1e64317516d92b5a/ss_de0d406d4946b22d174bb9ce1e64317516d92b5a.600x338.jpg?t=1782122172"
+    ]
   },
   {
     id: "gang-beasts",
@@ -70,6 +118,12 @@ const games = [
     accent: "#d95d39",
     image: "./assets/gang-beast.jpg",
     appId: 285900,
+    screenshots: [
+      "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/285900/ss_0476d6b0403313cb4fa727fd99146762eb80f611.600x338.jpg?t=1780410654",
+      "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/285900/ss_0e7190e5cee562fa851f23bfeb65b336550a6d18.600x338.jpg?t=1780410654",
+      "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/285900/ss_1778496dc8675159f7cb7ded7f6806ad4c1e2ccf.600x338.jpg?t=1780410654",
+      "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/285900/ss_d10fe0c8d1bcf4f69317121e2ba3dc23f052e352.600x338.jpg?t=1780410654"
+    ]
   },
   {
     id: "deathsprint-66",
@@ -78,6 +132,12 @@ const games = [
     accent: "#4657a8",
     image: "./assets/deathsprint-66.jpg",
     appId: 1273560,
+    screenshots: [
+      "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/1273560/ss_96c06df76c53e77793b240ec3858356490370348.600x338.jpg?t=1782410321",
+      "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/1273560/ss_e3d885f43e714496a02fd3d8ec106f266ef6d131.600x338.jpg?t=1782410321",
+      "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/1273560/ss_6793979af8626cb28e62dc24aa5110dc10d2dae5.600x338.jpg?t=1782410321",
+      "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/1273560/ss_dd10013510952d9cefa13debf821f6d6059f21b2.600x338.jpg?t=1782410321"
+    ]
   },
 ];
 
@@ -364,70 +424,38 @@ function renderAuth() {
 
 const activeIntervals = new Map();
 
-async function handleCardMouseEnter(gameId) {
+function handleCardMouseEnter(gameId) {
   const game = games.find((g) => g.id === gameId);
-  if (!game || !game.appId) return;
+  if (!game || !game.screenshots || game.screenshots.length === 0) return;
 
   const slideshowContainer = document.querySelector(`[data-slideshow-id="${gameId}"]`);
-  const loadingIndicator = document.getElementById(`loading-${gameId}`);
   if (!slideshowContainer) return;
 
-  if (!game.screenshots && !game.loadingScreens) {
-    game.loadingScreens = true;
-    if (loadingIndicator) loadingIndicator.style.display = "block";
+  const card = document.querySelector(`[data-card-id="${gameId}"]`);
+  if (!card || !card.matches(":hover")) return;
 
-    try {
-      const url = `https://api.allorigins.win/get?url=${encodeURIComponent(
-        `https://store.steampowered.com/api/appdetails?appids=${game.appId}`
-      )}`;
-      const res = await fetch(url);
-      const json = await res.json();
-      const steamData = JSON.parse(json.contents);
-      
-      if (steamData && steamData[game.appId] && steamData[game.appId].success) {
-        const data = steamData[game.appId].data;
-        game.screenshots = data.screenshots 
-          ? data.screenshots.map((s) => s.path_thumbnail) 
-          : [];
-      } else {
-        game.screenshots = [];
-      }
-    } catch (e) {
-      console.error("Error fetching steam screenshots:", e);
-      game.screenshots = [];
-    } finally {
-      game.loadingScreens = false;
-      if (loadingIndicator) loadingIndicator.style.display = "none";
-    }
+  if (activeIntervals.has(gameId)) {
+    clearInterval(activeIntervals.get(gameId));
   }
 
-  if (game.screenshots && game.screenshots.length > 0) {
-    const card = document.querySelector(`[data-card-id="${gameId}"]`);
-    if (!card || !card.matches(":hover")) return;
+  slideshowContainer.innerHTML = game.screenshots
+    .map(
+      (src, idx) =>
+        `<img class="slideshow-img ${idx === 0 ? "active" : ""}" src="${src}" alt="Screenshot" />`
+    )
+    .join("");
 
-    if (activeIntervals.has(gameId)) {
-      clearInterval(activeIntervals.get(gameId));
-    }
+  let currentIdx = 0;
+  const intervalId = setInterval(() => {
+    const imgs = slideshowContainer.querySelectorAll(".slideshow-img");
+    if (imgs.length === 0) return;
 
-    slideshowContainer.innerHTML = game.screenshots
-      .map(
-        (src, idx) =>
-          `<img class="slideshow-img ${idx === 0 ? "active" : ""}" src="${src}" alt="Screenshot" />`
-      )
-      .join("");
+    imgs[currentIdx].classList.remove("active");
+    currentIdx = (currentIdx + 1) % imgs.length;
+    imgs[currentIdx].classList.add("active");
+  }, 1500);
 
-    let currentIdx = 0;
-    const intervalId = setInterval(() => {
-      const imgs = slideshowContainer.querySelectorAll(".slideshow-img");
-      if (imgs.length === 0) return;
-
-      imgs[currentIdx].classList.remove("active");
-      currentIdx = (currentIdx + 1) % imgs.length;
-      imgs[currentIdx].classList.add("active");
-    }, 1500);
-
-    activeIntervals.set(gameId, intervalId);
-  }
+  activeIntervals.set(gameId, intervalId);
 }
 
 function handleCardMouseLeave(gameId) {
@@ -435,9 +463,6 @@ function handleCardMouseLeave(gameId) {
     clearInterval(activeIntervals.get(gameId));
     activeIntervals.delete(gameId);
   }
-
-  const loadingIndicator = document.getElementById(`loading-${gameId}`);
-  if (loadingIndicator) loadingIndicator.style.display = "none";
 
   const slideshowContainer = document.querySelector(`[data-slideshow-id="${gameId}"]`);
   if (slideshowContainer) {
