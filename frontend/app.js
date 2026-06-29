@@ -205,24 +205,31 @@ async function upsertProfile(user) {
 }
 
 async function fetchVotes() {
-  const { data, error } = await supabaseClient
-    .from("votes")
-    .select("user_id, game_id, created_at, profiles(display_name, avatar_url)")
-    .order("created_at", { ascending: false });
-
-  if (error) throw error;
-  return data || [];
+  return fetchPublicRows(
+    "votes?select=user_id,game_id,created_at,profiles(display_name,avatar_url)&order=created_at.desc"
+  );
 }
 
 async function fetchMyVotes(userId) {
-  const { data, error } = await supabaseClient
-    .from("votes")
-    .select("game_id")
-    .eq("user_id", userId)
-    .order("game_id");
-
-  if (error) throw error;
+  const data = await fetchPublicRows(`votes?select=game_id&user_id=eq.${encodeURIComponent(userId)}&order=game_id.asc`);
   return (data || []).map((vote) => vote.game_id);
+}
+
+async function fetchPublicRows(path) {
+  const baseUrl = config.supabaseUrl.replace(/\/$/, "");
+  const response = await fetch(`${baseUrl}/rest/v1/${path}`, {
+    headers: {
+      apikey: config.supabaseAnonKey,
+      Authorization: `Bearer ${config.supabaseAnonKey}`,
+    },
+  });
+
+  if (!response.ok) {
+    const message = await response.text();
+    throw new Error(message || `Supabase respondio ${response.status}`);
+  }
+
+  return response.json();
 }
 
 function buildResults(votes) {
