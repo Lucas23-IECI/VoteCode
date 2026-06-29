@@ -91,6 +91,7 @@ const els = {
 };
 
 let supabaseClient = null;
+let authPopupTimer = null;
 let state = {
   configured: false,
   user: null,
@@ -154,12 +155,38 @@ async function initialize() {
   state.results = buildResults([]);
   render();
 
+  if (isAuthCallbackPopup()) {
+    els.statusMessage.textContent = "Completando inicio de sesion...";
+    await loadStateSafely();
+    notifyOpenerAndClose();
+    return;
+  }
+
   supabaseClient.auth.onAuthStateChange(async () => {
     await loadStateSafely();
   });
 
   await loadPublicVotesSafely();
   loadStateSafely();
+}
+
+function isAuthCallbackPopup() {
+  if (!window.opener) return false;
+
+  const search = new URLSearchParams(window.location.search);
+  const hash = new URLSearchParams(window.location.hash.slice(1));
+
+  return search.has("code") || search.has("error") || hash.has("access_token") || hash.has("error");
+}
+
+function notifyOpenerAndClose() {
+  try {
+    window.opener.postMessage({ type: "votecode-auth-complete" }, window.location.origin);
+  } catch (error) {
+    console.error("Could not notify VoteCode opener:", error);
+  }
+
+  setTimeout(() => window.close(), 500);
 }
 
 async function loadPublicVotesSafely() {
@@ -531,16 +558,50 @@ async function saveVotes() {
 }
 
 async function loginWithGoogle() {
-  const { error } = await supabaseClient.auth.signInWithOAuth({
+  const { data, error } = await supabaseClient.auth.signInWithOAuth({
     provider: "google",
     options: {
       redirectTo: window.location.origin + window.location.pathname,
+      skipBrowserRedirect: true,
+      queryParams: {
+        prompt: "select_account",
+      },
     },
   });
 
   if (error) {
     els.statusMessage.textContent = error.message;
+    return;
   }
+
+  const authPopup = openAuthPopup(data.url);
+  if (!authPopup) {
+    els.statusMessage.textContent = "El navegador bloqueo la ventana chica. Permite popups para VoteCode.";
+    return;
+  }
+
+  els.statusMessage.textContent = "Elige tu cuenta en la ventana chica.";
+  if (authPopupTimer) clearInterval(authPopupTimer);
+  authPopupTimer = setInterval(async () => {
+    if (!authPopup.closed) return;
+
+    clearInterval(authPopupTimer);
+    authPopupTimer = null;
+    await loadStateSafely();
+  }, 700);
+}
+
+function openAuthPopup(url) {
+  const width = 520;
+  const height = 680;
+  const left = Math.max(Math.round(window.screenX + (window.outerWidth - width) / 2), 0);
+  const top = Math.max(Math.round(window.screenY + (window.outerHeight - height) / 2), 0);
+
+  return window.open(
+    url,
+    "votecode-google-login",
+    `popup=yes,width=${width},height=${height},left=${left},top=${top},resizable=yes,scrollbars=yes`
+  );
 }
 
 async function logout() {
@@ -555,6 +616,16 @@ els.clearSelection.addEventListener("click", () => {
   state.myVotes.clear();
   renderGames();
   renderControls();
+});
+
+window.addEventListener("message", async (event) => {
+  if (event.origin !== window.location.origin || event.data?.type !== "votecode-auth-complete") return;
+  await loadStateSafely();
+});
+
+window.addEventListener("storage", async (event) => {
+  if (!event.key?.startsWith("sb-")) return;
+  await loadStateSafely();
 });
 
 initialize().catch((error) => {
