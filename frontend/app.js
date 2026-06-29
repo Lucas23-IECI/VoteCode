@@ -5,6 +5,7 @@ const games = [
     price: 3290,
     accent: "#19736f",
     image: "./assets/rv-there-yet.jpg",
+    appId: 3949040,
   },
   {
     id: "sons-of-the-forest",
@@ -12,6 +13,7 @@ const games = [
     price: 4650,
     accent: "#263238",
     image: "./assets/sons-of-the-forest.jpg",
+    appId: 1326470,
   },
   {
     id: "risk-of-rain-2",
@@ -19,6 +21,7 @@ const games = [
     price: 3960,
     accent: "#bd4f2f",
     image: "./assets/risk-of-rain-2.jpg",
+    appId: 632360,
   },
   {
     id: "plague-inc",
@@ -26,6 +29,7 @@ const games = [
     price: 830,
     accent: "#566b2f",
     image: "./assets/plague-inc.jpg",
+    appId: 246620,
   },
   {
     id: "super-battle-golf",
@@ -33,6 +37,7 @@ const games = [
     price: 2800,
     accent: "#2f6fca",
     image: "./assets/super-battle-golf.jpg",
+    appId: 4069520,
   },
   {
     id: "gamble-with-your-friends",
@@ -40,6 +45,7 @@ const games = [
     price: 2914,
     accent: "#8f3f97",
     image: "./assets/gamble-with-your-friends.jpg",
+    appId: 3892270,
   },
   {
     id: "golf-with-your-friends",
@@ -47,6 +53,7 @@ const games = [
     price: 1190,
     accent: "#1f8a63",
     image: "./assets/golf-with-your-friends.jpg",
+    appId: 431240,
   },
   {
     id: "escape-the-backrooms",
@@ -54,6 +61,7 @@ const games = [
     price: 3384,
     accent: "#c99b38",
     image: "./assets/escape-the-backrooms.jpg",
+    appId: 1943950,
   },
   {
     id: "gang-beasts",
@@ -61,6 +69,7 @@ const games = [
     price: 4200,
     accent: "#d95d39",
     image: "./assets/gang-beast.jpg",
+    appId: 285900,
   },
   {
     id: "deathsprint-66",
@@ -68,6 +77,7 @@ const games = [
     price: 1925,
     accent: "#4657a8",
     image: "./assets/deathsprint-66.jpg",
+    appId: 1273560,
   },
 ];
 
@@ -139,6 +149,29 @@ function getUserDisplay(user) {
   };
 }
 
+let googleInitialized = false;
+
+function initGoogleAuth() {
+  if (googleInitialized) return true;
+  if (config.googleClientId && window.google) {
+    window.google.accounts.id.initialize({
+      client_id: config.googleClientId,
+      callback: handleGoogleSignIn,
+    });
+    googleInitialized = true;
+    return true;
+  }
+  return false;
+}
+
+window.onGoogleLibraryLoad = function() {
+  if (initGoogleAuth()) {
+    if (!state.user) {
+      renderAuth();
+    }
+  }
+};
+
 async function initialize() {
   state.configured = isConfigured();
 
@@ -151,12 +184,7 @@ async function initialize() {
 
   supabaseClient = window.supabase.createClient(config.supabaseUrl, config.supabaseAnonKey);
   
-  if (config.googleClientId && window.google) {
-    window.google.accounts.id.initialize({
-      client_id: config.googleClientId,
-      callback: handleGoogleSignIn,
-    });
-  }
+  initGoogleAuth();
 
   supabaseClient.auth.onAuthStateChange(async () => {
     await loadState();
@@ -318,7 +346,9 @@ function renderAuth() {
     </div>
   `;
 
-  if (config.googleClientId && window.google) {
+  initGoogleAuth();
+
+  if (googleInitialized) {
     window.google.accounts.id.renderButton(
       document.getElementById("google-login-button-container"),
       { theme: "outline", size: "large", text: "signin_with" }
@@ -332,6 +362,89 @@ function renderAuth() {
   }
 }
 
+const activeIntervals = new Map();
+
+async function handleCardMouseEnter(gameId) {
+  const game = games.find((g) => g.id === gameId);
+  if (!game || !game.appId) return;
+
+  const slideshowContainer = document.querySelector(`[data-slideshow-id="${gameId}"]`);
+  const loadingIndicator = document.getElementById(`loading-${gameId}`);
+  if (!slideshowContainer) return;
+
+  if (!game.screenshots && !game.loadingScreens) {
+    game.loadingScreens = true;
+    if (loadingIndicator) loadingIndicator.style.display = "block";
+
+    try {
+      const url = `https://api.allorigins.win/get?url=${encodeURIComponent(
+        `https://store.steampowered.com/api/appdetails?appids=${game.appId}`
+      )}`;
+      const res = await fetch(url);
+      const json = await res.json();
+      const steamData = JSON.parse(json.contents);
+      
+      if (steamData && steamData[game.appId] && steamData[game.appId].success) {
+        const data = steamData[game.appId].data;
+        game.screenshots = data.screenshots 
+          ? data.screenshots.map((s) => s.path_thumbnail) 
+          : [];
+      } else {
+        game.screenshots = [];
+      }
+    } catch (e) {
+      console.error("Error fetching steam screenshots:", e);
+      game.screenshots = [];
+    } finally {
+      game.loadingScreens = false;
+      if (loadingIndicator) loadingIndicator.style.display = "none";
+    }
+  }
+
+  if (game.screenshots && game.screenshots.length > 0) {
+    const card = document.querySelector(`[data-card-id="${gameId}"]`);
+    if (!card || !card.matches(":hover")) return;
+
+    if (activeIntervals.has(gameId)) {
+      clearInterval(activeIntervals.get(gameId));
+    }
+
+    slideshowContainer.innerHTML = game.screenshots
+      .map(
+        (src, idx) =>
+          `<img class="slideshow-img ${idx === 0 ? "active" : ""}" src="${src}" alt="Screenshot" />`
+      )
+      .join("");
+
+    let currentIdx = 0;
+    const intervalId = setInterval(() => {
+      const imgs = slideshowContainer.querySelectorAll(".slideshow-img");
+      if (imgs.length === 0) return;
+
+      imgs[currentIdx].classList.remove("active");
+      currentIdx = (currentIdx + 1) % imgs.length;
+      imgs[currentIdx].classList.add("active");
+    }, 1500);
+
+    activeIntervals.set(gameId, intervalId);
+  }
+}
+
+function handleCardMouseLeave(gameId) {
+  if (activeIntervals.has(gameId)) {
+    clearInterval(activeIntervals.get(gameId));
+    activeIntervals.delete(gameId);
+  }
+
+  const loadingIndicator = document.getElementById(`loading-${gameId}`);
+  if (loadingIndicator) loadingIndicator.style.display = "none";
+
+  const slideshowContainer = document.querySelector(`[data-slideshow-id="${gameId}"]`);
+  if (slideshowContainer) {
+    slideshowContainer.innerHTML = "";
+  }
+}
+
 function renderGames() {
   const resultById = Object.fromEntries(state.results.map((result) => [result.id, result]));
 
@@ -342,10 +455,12 @@ function renderGames() {
       const selected = state.myVotes.has(game.id);
 
       return `
-        <article class="game-card ${selected ? "selected" : ""}">
+        <article class="game-card ${selected ? "selected" : ""}" data-card-id="${game.id}">
           <button class="game-toggle" type="button" data-game-id="${game.id}" aria-pressed="${selected}">
             <div class="game-art" style="--accent: ${game.accent}">
               <img src="${game.image}" alt="Imagen de ${game.name}" loading="lazy" />
+              <div class="screenshot-slideshow" data-slideshow-id="${game.id}"></div>
+              <div class="slideshow-loading" id="loading-${game.id}" style="display: none;">Cargando capturas...</div>
               <span class="checkmark">OK</span>
               <span class="game-price-badge">${formatPrice(game.price)}</span>
             </div>
@@ -364,6 +479,12 @@ function renderGames() {
 
   els.gamesList.querySelectorAll("[data-game-id]").forEach((button) => {
     button.addEventListener("click", () => toggleGame(button.dataset.gameId));
+  });
+
+  els.gamesList.querySelectorAll("[data-card-id]").forEach((card) => {
+    const gameId = card.dataset.cardId;
+    card.addEventListener("mouseenter", () => handleCardMouseEnter(gameId));
+    card.addEventListener("mouseleave", () => handleCardMouseLeave(gameId));
   });
 }
 
